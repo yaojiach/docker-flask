@@ -10,12 +10,10 @@
 ```sh
 docker-compose run web /usr/local/bin/python manage.py db init
 ```
-
   * Create db
 ```sh
 docker-compose run web /usr/local/bin/python manage.py create_db
 ```
-
   * Migaration and upgrade
 ```sh
 docker-compose run web /usr/local/bin/python manage.py db migrate
