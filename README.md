@@ -1,31 +1,65 @@
-## Docker Flask Boilerplate
+# Docker Flask Boilerplate
+
+Flask JWT boilerplate with `gunicorn`, `nginx`, and external `psql` database. Good for quickly set up an authentication backend.
+
+* Use `Pipfile` for dependency management. 
+* Use `Flask-Restful` as the REST API framework.
+* Use `Flask-JWT-Extended` as the (opinionated) JWT framework. Including features like `refresh token` and `token revoking`.
+
+## Features
 
 * Docker
 * nginx
 * gunicorn
 * flask
-* postgres
-* data migration
-  * Add migrations folder
+* jwt
+* external Postgres
+
+## Usage
+
+Stand up external psql database
+
 ```sh
-docker-compose run web /usr/local/bin/python manage.py db init
-```
-  * Create db
-```sh
-docker-compose run web /usr/local/bin/python manage.py create_db
-```
-  * Migaration
-```sh
-docker-compose run web /usr/local/bin/python manage.py db migrate
-docker-compose run web /usr/local/bin/python manage.py db upgrade
+bash dbscript.sh
 ```
 
+Build containers
 
-## TODO
+```sh
+docker-compose up --build
+```
 
-* authentication/JWT
-* testing
-* mongodb
-* npm/node
-* react/redux/webpack/etc
-* separate dev/prod configs
+Kill processes
+
+```sh
+docker-compose rm -fs
+```
+
+## Gotchas
+
+Set `PROPAGATE_EXCEPTIONS` to propagate exceptions from `flask-jwt-extended`
+
+```python
+class Config:
+    ...
+    PROPAGATE_EXCEPTIONS = True
+```
+
+Must include `Pipfile.lock` for `pipenv` to install system-wide in docker
+
+```dockerfile
+...
+COPY Pipfile.lock /home/project/web
+...
+```
+
+Use `host.docker.internal` inside container to access host machine's localhost
+
+```sh
+DATABASE_URL=postgresql://dev:12345@host.docker.internal:5432/jwt
+```
+
+## References
+
+* https://github.com/oleg-agapov/flask-jwt-auth
+* https://github.com/sladkovm/docker-flask-gunicorn-nginx

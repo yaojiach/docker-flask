@@ -1,17 +1,16 @@
-# config.py
-
-
 import os
+from dotenv import load_dotenv
 
 
-class BaseConfig(object):
-    SECRET_KEY = os.environ['SECRET_KEY']
-    DEBUG = os.environ['DEBUG']
-    DB_NAME = os.environ['DB_NAME']
-    DB_USER = os.environ['DB_USER']
-    DB_PASS = os.environ['DB_PASS']
-    DB_SERVICE = os.environ['DB_SERVICE']
-    DB_PORT = os.environ['DB_PORT']
-    SQLALCHEMY_DATABASE_URI = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(
-        DB_USER, DB_PASS, DB_SERVICE, DB_PORT, DB_NAME
-    )
+basedir = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(basedir, '.env'))
+
+
+class Config:
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    JWT_SECRET_KEY = SECRET_KEY
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    JWT_BLACKLIST_ENABLED = True
+    JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
+    PROPAGATE_EXCEPTIONS = True
