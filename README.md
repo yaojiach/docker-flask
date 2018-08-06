@@ -37,7 +37,7 @@ docker-compose rm -fs
 
 To access (example in `Postman`):
 
-![Registration Example](https://github.com/yaojiach/docker-flask-boilerplate/postman-example.png)
+![Registration Example](https://github.com/yaojiach/docker-flask-boilerplate/blob/master/postman-example.png)
 
 
 ## Gotchas
