@@ -1,6 +1,6 @@
 # Docker Flask Boilerplate
 
-Flask JWT boilerplate with `gunicorn`, `nginx`, and external `psql` database. Good for quickly set up an authentication backend.
+Flask JWT boilerplate with `gunicorn`, `nginx`, and external `psql` database. Good for quickly set up an authentication backend (for example for a frontend development).
 
 * Use `Pipfile` for dependency management. 
 * Use `Flask-Restful` as the REST API framework.
@@ -34,6 +34,11 @@ Kill processes
 ```sh
 docker-compose rm -fs
 ```
+
+To access (example in `Postman`):
+
+![Registration Example](https://github.com/yaojiach/docker-flask-boilerplate/postman-example.png)
+
 
 ## Gotchas
 
