@@ -1,5 +1,7 @@
 # Docker Flask Boilerplate
 
+**Tested on Mac, Linux, Windows**
+
 Flask JWT boilerplate with `gunicorn`, `nginx`, and external `psql` database. Good for quickly set up an authentication backend (for example for a frontend development).
 
 * Use `Pipfile` for dependency management. 
