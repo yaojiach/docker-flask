@@ -25,7 +25,7 @@ Flask JWT boilerplate with `gunicorn`, `nginx`, and external `psql` database. Go
 Stand up external psql database
 
 ```sh
-bash dbscript.sh
+bash db/dbscript.sh
 ```
 
 Build containers
