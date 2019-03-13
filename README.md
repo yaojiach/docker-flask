@@ -15,6 +15,9 @@ Flask JWT boilerplate with `gunicorn`, `nginx`, and external `psql` database. Go
 * gunicorn
 * flask
 * jwt
+
+## Non-Features
+
 * external Postgres
 
 ## Usage
