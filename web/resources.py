@@ -5,7 +5,8 @@ from flask_jwt_extended import (
     jwt_required, 
     jwt_refresh_token_required, 
     get_jwt_identity, 
-    get_raw_jwt
+    get_raw_jwt,
+    get_jti
 )
 from run import db
 from models import User, RevokedToken
@@ -15,6 +16,8 @@ parser_user_access = reqparse.RequestParser()
 parser_user_access.add_argument('email', required=True)
 parser_user_access.add_argument('password', required=True)
 
+parser_refresh = reqparse.RequestParser()
+parser_refresh.add_argument('refresh_token', required=True)
 
 class UserRegistration(Resource):
     def post(self):
@@ -59,7 +62,7 @@ class UserLogin(Resource):
                 'message': f'Logged in as {current_user.email}',
                 'access_token': access_token,
                 'refresh_token': refresh_token
-                }
+            }
         else:
             return {'message': 'Invalid credentials'}
       
@@ -67,11 +70,16 @@ class UserLogin(Resource):
 class UserLogoutAccess(Resource):
     @jwt_required
     def post(self):
+        data = parser_refresh.parse_args()
+        refresh_token = data.get('refresh_token')
         jti = get_raw_jwt()['jti']
+        refresh_jti = get_jti(refresh_token)
         try:
             revoked_token = RevokedToken(jti=jti)
             revoked_token.revoke()
-            return {'message': 'Access token has been revoked'}
+            revoked_token = RevokedToken(jti=refresh_jti)
+            revoked_token.revoke()
+            return {'message': 'Access and refresh token has been revoked'}
         except:
             return ({'message': 'Something went wrong'}, 500)
       
