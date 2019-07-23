@@ -31,7 +31,7 @@ from resources import (
 
 api.add_resource(UserRegistration, '/api/registration')
 api.add_resource(UserLogin, '/api/login')
-api.add_resource(UserLogoutAccess, '/api/logout/access')
+api.add_resource(UserLogoutAccess, '/api/logout/access') # Full log out (revoke access and refresh)
 api.add_resource(UserLogoutRefresh, '/api/logout/refresh')
 api.add_resource(TokenRefresh, '/api/token/refresh')
 api.add_resource(ProtectedResource, '/api/protected')

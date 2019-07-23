@@ -16,8 +16,11 @@ parser_user_access = reqparse.RequestParser()
 parser_user_access.add_argument('email', required=True)
 parser_user_access.add_argument('password', required=True)
 
+parser_revoke = reqparse.RequestParser()
+parser_revoke.add_argument('refresh_token', required=True)
+
 parser_refresh = reqparse.RequestParser()
-parser_refresh.add_argument('refresh_token', required=True)
+parser_refresh.add_argument('access_token', required=True)
 
 class UserRegistration(Resource):
     def post(self):
@@ -70,7 +73,7 @@ class UserLogin(Resource):
 class UserLogoutAccess(Resource):
     @jwt_required
     def post(self):
-        data = parser_refresh.parse_args()
+        data = parser_revoke.parse_args()
         refresh_token = data.get('refresh_token')
         jti = get_raw_jwt()['jti']
         refresh_jti = get_jti(refresh_token)
@@ -99,8 +102,16 @@ class UserLogoutRefresh(Resource):
 class TokenRefresh(Resource):
     @jwt_refresh_token_required
     def post(self):
+        data = parser_refresh.parse_args()
+        old_access_token = data.get('access_token')
+        jti = get_raw_jwt()['jti']
+        refresh_jti = get_jti(refresh_token)
         current_user = get_jwt_identity()
+        # Refresh new access token
         access_token = create_access_token(identity=current_user)
+        # Revoke old access token
+        revoked_token = RevokedToken(jti=old_access_token)
+        revoked_token.revoke()
         return {'access_token': access_token}
 
 
