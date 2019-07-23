@@ -1,5 +1,6 @@
 #!/bin/bash
 psql << EOF
+    drop database if exists jwt;
     create database jwt;
     create user dev with password '12345';
     grant all privileges on database jwt to dev;

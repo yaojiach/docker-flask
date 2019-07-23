@@ -1,10 +1,11 @@
 import os
+from datetime import timedelta
 from dotenv import load_dotenv
 
-
+ACCESS_EXPIRES = timedelta(minutes=15)
+REFRESH_EXPIRES = timedelta(days=30)
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, '.env'))
-
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY')
@@ -13,4 +14,6 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
+    JWT_ACCESS_TOKEN_EXPIRES = ACCESS_EXPIRES
+    JWT_REFRESH_TOKEN_EXPIRES = REFRESH_EXPIRES
     PROPAGATE_EXCEPTIONS = True

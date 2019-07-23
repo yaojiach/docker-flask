@@ -15,6 +15,7 @@ Flask JWT boilerplate with `gunicorn`, `nginx`, and external `psql` database. Go
 * gunicorn
 * flask
 * jwt
+* redis (Used to store jwt token information)
 
 ## Non-Features
 

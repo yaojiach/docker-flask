@@ -8,8 +8,9 @@ from flask_jwt_extended import (
     get_raw_jwt,
     get_jti
 )
-from run import db
-from models import User, RevokedToken
+from run import db, blacklist_store
+from models import User
+from config import ACCESS_EXPIRES, REFRESH_EXPIRES
 
 
 parser_user_access = reqparse.RequestParser()
@@ -21,6 +22,28 @@ parser_revoke.add_argument('refresh_token', required=True)
 
 parser_refresh = reqparse.RequestParser()
 parser_refresh.add_argument('access_token', required=True)
+
+
+def add_to_store(access_token, refresh_token):
+    """
+        Store the tokens in redis with a status of not currently revoked. We
+        can use the `get_jti()` method to get the unique identifier string for
+        each token. We can also set an expires time on these tokens in redis,
+        so they will get automatically removed after they expire. We will set
+        everything to be automatically removed shortly after the token expires
+    """
+    access_jti = get_jti(encoded_token=access_token)
+    refresh_jti = get_jti(encoded_token=refresh_token)
+    blacklist_store.set(access_jti, 'false', ACCESS_EXPIRES * 1.2)
+    blacklist_store.set(refresh_jti, 'false', REFRESH_EXPIRES * 1.2)
+
+
+def revoke(revoke_type, jti):
+    if revoke_type == 'access':
+        blacklist_store.set(jti, 'true', ACCESS_EXPIRES * 1.2)
+    elif revoke_type == 'refresh':
+        blacklist_store.set(jti, 'true', REFRESH_EXPIRES * 1.2)
+
 
 class UserRegistration(Resource):
     def post(self):
@@ -38,6 +61,7 @@ class UserRegistration(Resource):
             db.session.commit()
             access_token = create_access_token(identity=email)
             refresh_token = create_refresh_token(identity=email)
+            add_to_store(access_token, refresh_token)
             return (
                 {
                     'message': f'User {email} was created',
@@ -61,6 +85,7 @@ class UserLogin(Resource):
         if User.verify_hash(password, current_user.password_hash):
             access_token = create_access_token(identity=email)
             refresh_token = create_refresh_token(identity=email)
+            add_to_store(access_token, refresh_token)
             return {
                 'message': f'Logged in as {current_user.email}',
                 'access_token': access_token,
@@ -75,13 +100,11 @@ class UserLogoutAccess(Resource):
     def post(self):
         data = parser_revoke.parse_args()
         refresh_token = data.get('refresh_token')
-        jti = get_raw_jwt()['jti']
+        access_jti = get_raw_jwt()['jti']
         refresh_jti = get_jti(refresh_token)
         try:
-            revoked_token = RevokedToken(jti=jti)
-            revoked_token.revoke()
-            revoked_token = RevokedToken(jti=refresh_jti)
-            revoked_token.revoke()
+            revoke('access', access_jti)
+            revoke('refresh', refresh_jti)
             return {'message': 'Access and refresh token has been revoked'}
         except:
             return ({'message': 'Something went wrong'}, 500)
@@ -92,8 +115,7 @@ class UserLogoutRefresh(Resource):
     def post(self):
         jti = get_raw_jwt()['jti']
         try:
-            revoked_token = RevokedToken(jti=jti)
-            revoked_token.revoke()
+            revoke('refresh', refresh_jti)
             return {'message': 'Refresh token has been revoked'}
         except:
             return ({'message': 'Something went wrong'}, 500)
@@ -104,14 +126,14 @@ class TokenRefresh(Resource):
     def post(self):
         data = parser_refresh.parse_args()
         old_access_token = data.get('access_token')
-        jti = get_raw_jwt()['jti']
-        refresh_jti = get_jti(refresh_token)
+        old_access_jti = get_jti(encoded_token=old_access_token)
         current_user = get_jwt_identity()
         # Refresh new access token
         access_token = create_access_token(identity=current_user)
+        access_jti = get_jti(encoded_token=access_token)
+        blacklist_store.set(access_jti, 'false', ACCESS_EXPIRES * 1.2)
         # Revoke old access token
-        revoked_token = RevokedToken(jti=old_access_token)
-        revoked_token.revoke()
+        blacklist_store.set(old_access_jti, 'true', ACCESS_EXPIRES * 1.2)
         return {'access_token': access_token}
 
 
@@ -120,6 +142,7 @@ class OpenResource(Resource):
         return {
             'message': 'This is a message'
         }
+
 
 class ProtectedResource(Resource):
     @jwt_required

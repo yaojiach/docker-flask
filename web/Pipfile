@@ -12,6 +12,7 @@ flask-restful = "*"
 passlib = "*"
 python-dotenv = "*"
 "psycopg2-binary" = "*"
+redis = "*"
 
 [dev-packages]
 pylint = "*"

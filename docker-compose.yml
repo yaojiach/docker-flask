@@ -17,3 +17,6 @@ services:
       - "80:80"
     depends_on:
       - web
+
+  redis:
+    image: "redis:alpine"
