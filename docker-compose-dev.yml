@@ -25,10 +25,8 @@ services:
     volumes:
       - ./postgres_data:/var/lib/postgresql/data/
       - ./db-dev/:/docker-entrypoint-initdb.d/
-    environment:
-      - POSTGRES_USER=dev
-      - POSTGRES_PASSWORD=12345
-      - POSTGRES_DB=jwt
+    env_file:
+      - ./web/.env.dev
     restart: always
     ports:
       - "5432:5432"

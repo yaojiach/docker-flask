@@ -48,7 +48,7 @@ Full clean up (remove `Postgres` volume)
 ```sh
 docker stop $(docker ps -a -q)
 docker-compose rm -fs
-docker system prune -y
+docker system prune
 rm -rf postgres_data
 ```
 
@@ -88,6 +88,10 @@ Use `host.docker.internal` inside container to access host machine's localhost
 ```sh
 DATABASE_URL=postgresql://dev:12345@host.docker.internal:5432/jwt
 ```
+
+## Caveats
+
+* Should use external `redis` for production
 
 ## References
 
