@@ -34,7 +34,7 @@ docker-compose --file docker-compose-dev.yml up --build
 Stand up external `Postgres` database
 
 ```sh
-bash db/dbscript.sh
+bash db/init.sh
 ```
 
 Build containers
