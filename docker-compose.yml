@@ -2,15 +2,15 @@ version: '3'
 
 services:
   web:
-    container_name: web
     restart: always
     build: ./web
     ports:
       - "8000:8000"
+    env_file:
+      - ./web/.env
     command: gunicorn -w 1 -b :8000 run:app
 
   nginx:
-    container_name: nginx
     restart: always
     build: ./nginx
     ports:

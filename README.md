@@ -23,6 +23,12 @@ Flask JWT boilerplate with `gunicorn`, `nginx`, and external `psql` database. Go
 
 ## Usage
 
+Dev with dockerized Postgres
+
+```sh
+docker-compose --file docker-compose-dev.yml up --build
+```
+
 Stand up external psql database
 
 ```sh
@@ -35,16 +41,27 @@ Build containers
 docker-compose up --build
 ```
 
-Kill processes
+Full clean up
 
 ```sh
+docker stop $(docker ps -a -q)
 docker-compose rm -fs
+docker system prune -y
+rm -rf postgres_data
+```
+
+Registration example
+
+```json
+{
+    "email": "test@test.com",
+    "password": "12345"
+}
 ```
 
 To access (example in `Postman`):
 
 ![Registration Example](https://github.com/yaojiach/docker-flask-boilerplate/blob/master/postman-example.png)
-
 
 ## Gotchas
 
