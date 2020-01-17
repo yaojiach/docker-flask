@@ -2,9 +2,9 @@
 
 **Tested on Mac, Linux, Windows**
 
-Flask JWT boilerplate with `gunicorn`, `nginx`, and external `psql` database. Good for quickly set up an authentication backend (for example for a frontend development).
+`Docker` + `Flask` + `JWT` boilerplate with `gunicorn`, `nginx`, and external (dockerized for dev) `Postgres` database. Good for quickly set up an authentication backend (for example for a frontend development). Implemented user registration, user login, access token, refresh token, and token revocation.
 
-* Use `Pipfile` for dependency management. 
+* Use `Pipfile` for dependency management.
 * Use `Flask-Restful` as the REST API framework.
 * Use `Flask-JWT-Extended` as the (opinionated) JWT framework. Including features like `refresh token` and `token revoking`.
 
@@ -15,21 +15,23 @@ Flask JWT boilerplate with `gunicorn`, `nginx`, and external `psql` database. Go
 * gunicorn
 * flask
 * jwt
+* Postgres
 * redis (Used to store jwt token information)
 
 ## Non-Features
 
-* external Postgres
+* external `Postgres`
+* Dockerized `Postgres` for dev
 
 ## Usage
 
-Dev with dockerized Postgres
+Dev with dockerized `Postgres`
 
 ```sh
 docker-compose --file docker-compose-dev.yml up --build
 ```
 
-Stand up external psql database
+Stand up external `Postgres` database
 
 ```sh
 bash db/dbscript.sh
@@ -41,7 +43,7 @@ Build containers
 docker-compose up --build
 ```
 
-Full clean up
+Full clean up (remove `Postgres` volume)
 
 ```sh
 docker stop $(docker ps -a -q)
@@ -50,7 +52,7 @@ docker system prune -y
 rm -rf postgres_data
 ```
 
-Registration example
+User Registration example
 
 ```json
 {
@@ -59,7 +61,7 @@ Registration example
 }
 ```
 
-To access (example in `Postman`):
+Example in `Postman`:
 
 ![Registration Example](https://github.com/yaojiach/docker-flask-boilerplate/blob/master/postman-example.png)
 
